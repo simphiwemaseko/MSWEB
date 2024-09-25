@@ -1,26 +1,59 @@
 name: Playwright Tests
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: lts/*
+
     - name: Install dependencies
       run: npm ci
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
+    - name: Start Angular App
+      run: npx ng serve --host 0.0.0.0 --port 4200 &
+      continue-on-error: true # This allows the next steps to run even if this fails
+
+    - name: Wait for the Angular app to start
+      run: |
+        for i in {1..30}; do
+          if curl -s http://localhost:4200/; then
+            echo "Angular app is running!"
+            exit 0
+          fi
+          echo "Waiting for Angular app to start..."
+          sleep 5
+        done
+        echo "Angular app did not start in time!"
+        exit 1
+
     - name: Run Playwright tests
       run: npx playwright test
-    - uses: actions/upload-artifact@v4
+
+    - name: Stop Angular App
+      run: |
+        echo "Stopping Angular app..."
+        pkill -f "ng serve" || true
+
+    - name: Upload Playwright report
       if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
       with:
         name: playwright-report
         path: playwright-report/
