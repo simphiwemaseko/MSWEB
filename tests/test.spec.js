@@ -1,16 +1,16 @@
 const {test,expect} = require('@playwright/test');
 const { exec } = require('child_process');
 const {landingPage} = require('../pageobjects/landingpage.js');
+const path = require('path');
 
 let ngServeProcess;
 let username = "SimzTest"
 
 test.beforeAll(async () => {
-    // Start ng serve
-    ngServeProcess = exec('ng serve', { cwd:'C:\\workspace\\MSWeb'});
-
-    // Allow some time for the app to start
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    const cwd = path.join(process.cwd(), 'MSWEB'); 
+    // Start ng serve using npx
+    ngServeProcess = exec('npx ng serve', { cwd });
 });
 
 test('Verify that the button is present on the landing page.', async ({ page }) => {
