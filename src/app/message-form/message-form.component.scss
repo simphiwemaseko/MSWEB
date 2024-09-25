@@ -1,0 +1,22 @@
+button.btn {
+    background: #d84727;
+    border-color: #d84727;
+    border-radius: 20px;
+    padding: 10px 38px;
+}
+
+.btn:active {
+    background-color: #9f412c;
+    border-color: #d84727;
+}
+
+.form-container {
+    background-color: #ededed;
+    padding: 30px;
+    div {
+        width: 90%;
+        h4 {
+            margin-bottom: 30px;
+        }
+    }
+}
